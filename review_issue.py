@@ -402,8 +402,6 @@ import os
 from typing import List, Dict, Any
 import regex as re
 from github import Github
-from github.Issue import Issue
-from github.Repository import Repository
 from qdrant_client import QdrantClient
 from qdrant_client.models import PointStruct
 import openai
@@ -456,7 +454,8 @@ class GithubHandler:
         try:
             self.repo.create_label(name="toxic", color="ff0000")
             self.repo.create_label(name="duplicated", color="708090")
-        except:
+        except Exception as e:  # TODO: より詳細なExceptionを指定する
+            print(f"無視: {e}")
             pass
 
     def add_label(self, label: str):
@@ -497,7 +496,8 @@ class ContentModerator:
                 max_tokens=1200,
             )
             return "true" in response.choices[0].message.content.lower()
-        except:
+        except Exception as e:  # TODO: より詳細なexceptionを指定する
+            print(f"Openaiでチェック中にエラーが発生しました(問題があると推定します): {e}")
             return True
 
     def judge_violation(self, text: str) -> bool:
